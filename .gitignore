@@ -94,7 +94,6 @@ sorc/wafs_setmissing.fd
 # Ignore scripts from externals
 #------------------------------
 # jobs symlinks
-jobs/JGDAS_ATMOS_ANALYSIS_DIAG
 jobs/JGDAS_ATMOS_CHGRES_FORENKF
 jobs/JGDAS_ATMOS_GLDAS
 jobs/JGDAS_ATMOS_VERFOZN
@@ -114,8 +113,6 @@ jobs/JGFS_ATMOS_WAFS_BLENDING_0P25
 jobs/JGFS_ATMOS_WAFS_GCIP
 jobs/JGFS_ATMOS_WAFS_GRIB2
 jobs/JGFS_ATMOS_WAFS_GRIB2_0P25
-jobs/JGLOBAL_ATMOS_ANALYSIS
-jobs/JGLOBAL_ATMOS_ANALYSIS_CALC
 jobs/JGLOBAL_ATMOS_NCEPPOST
 jobs/JGLOBAL_ATMOS_POST_MANAGER
 # scripts symlinks
@@ -140,10 +137,7 @@ scripts/exgfs_atmos_wafs_gcip.sh
 scripts/exgfs_atmos_wafs_grib.sh
 scripts/exgfs_atmos_wafs_grib2.sh
 scripts/exgfs_atmos_wafs_grib2_0p25.sh
-scripts/exglobal_atmos_analysis.sh
-scripts/exglobal_atmos_analysis_calc.sh
 scripts/exglobal_atmos_pmgr.sh
-scripts/exglobal_diag.sh
 # ush symlinks
 ush/calcanl_gfs.py
 ush/calcinc_gfs.py
