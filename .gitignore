@@ -116,8 +116,6 @@ scripts/exgfs_atmos_wafs_grib2.sh
 scripts/exgfs_atmos_wafs_grib2_0p25.sh
 scripts/exglobal_atmos_pmgr.sh
 # ush symlinks
-ush/calcanl_gfs.py
-ush/calcinc_gfs.py
 ush/emcsfc_ice_blend.sh
 ush/emcsfc_snow.sh
 ush/fix_precip.sh
@@ -128,7 +126,6 @@ ush/fv3gfs_dwn_nems.sh
 ush/fv3gfs_filter_topo.sh
 ush/fv3gfs_make_grid.sh
 ush/fv3gfs_make_orog.sh
-ush/getncdimlen
 ush/gfs_nceppost.sh
 ush/gfs_transfer.sh
 ush/gldas_archive.sh
@@ -141,7 +138,6 @@ ush/global_chgres.sh
 ush/global_chgres_driver.sh
 ush/global_cycle.sh
 ush/global_cycle_driver.sh
-ush/gsi_utils.py
 ush/link_crtm_fix.sh
 ush/minmon_xtrct_costs.pl
 ush/minmon_xtrct_gnorms.pl
