@@ -114,10 +114,11 @@ cd ${pwd}/../fix                ||exit 8
     [[ -d fix_gsi ]] && rm -rf fix_gsi
     $LINK ../sorc/gsi.fd/fix  fix_gsi
 cd ${pwd}/../ush                ||exit 8
-    $LINK ../sorc/gsi.fd/ush/gsi_utils.py        .
-    $LINK ../sorc/gsi.fd/ush/calcanl_gfs.py      .
-    $LINK ../sorc/gsi.fd/ush/calcinc_gfs.py      .
-    $LINK ../sorc/gsi.fd/ush/getncdimlen         .
+# The following are now explicitly in the global-workflow repository
+#    $LINK ../sorc/gsi.fd/ush/gsi_utils.py        .
+#    $LINK ../sorc/gsi.fd/ush/calcanl_gfs.py      .
+#    $LINK ../sorc/gsi.fd/ush/calcinc_gfs.py      .
+#    $LINK ../sorc/gsi.fd/ush/getncdimlen         .
 
 
 #------------------------------
