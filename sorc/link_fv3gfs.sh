@@ -195,12 +195,23 @@ for ufs_utilsexe in \
     $LINK ../sorc/ufs_utils.fd/exec/$ufs_utilsexe .
 done
 
-for gsiexe in  calc_analysis.x calc_increment_ens_ncio.x calc_increment_ens.x \
-    getsfcensmeanp.x getsigensmeanp_smooth.x getsigensstatp.x enkf.x gsi.x \
-    interp_inc.x ncdiag_cat_serial.x oznmon_horiz.x oznmon_time.x radmon_angle.x \
-    radmon_bcoef.x radmon_bcor.x radmon_time.x recentersigp.x;do
+#for gsiexe in  calc_analysis.x calc_increment_ens_ncio.x calc_increment_ens.x \
+#    getsfcensmeanp.x getsigensmeanp_smooth.x getsigensstatp.x enkf.x gsi.x \
+#    interp_inc.x ncdiag_cat_serial.x oznmon_horiz.x oznmon_time.x radmon_angle.x \
+#    radmon_bcoef.x radmon_bcor.x radmon_time.x recentersigp.x;do
+#    [[ -s $gsiexe ]] && rm -f $gsiexe
+#    $LINK ../sorc/gsi.fd/exec/$gsiexe .
+#done
+
+for gsiexe in enkf.x gsi.x; do
     [[ -s $gsiexe ]] && rm -f $gsiexe
     $LINK ../sorc/gsi.fd/exec/$gsiexe .
+done
+
+for gsiexe in  calc_analysis.x calc_increment_ens_ncio.x calc_increment_ens.x \
+    getsfcensmeanp.x getsigensmeanp_smooth.x getsigensstatp.x interp_inc.x; do
+    [[ -s $gsiexe ]] && rm -f $gsiexe
+    $LINK ../sorc/gsi_utils.fd/install/bin/$gsiexe .
 done
 
 for gldasexe in gdas2gldas  gldas2gdas  gldas_forcing  gldas_model  gldas_post  gldas_rst; do

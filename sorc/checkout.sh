@@ -45,6 +45,18 @@ else
     echo 'Skip.  Directory gsi.fd already exists.'
 fi
 
+echo gsi_utils checkout ...
+if [[ ! -d gsi_utils.fd ]] ; then
+    rm -f ${topdir}/checkout-gsi.log
+# Check out develop for now
+    git clone --recursive https://github.com/NOAA-EMC/GSI-Utils.git gsi_utils.fd >> ${topdir}/checkout-gsi_utils.log 2>&1
+    cd gsi_utils.fd
+    git submodule update --init
+    cd ${topdir}
+else
+    echo 'Skip.  Directory gsi_utils.fd already exists.'
+fi
+
 echo gldas checkout ...
 if [[ ! -d gldas.fd ]] ; then
     rm -f ${topdir}/checkout-gldas.log

@@ -84,6 +84,21 @@ fi
 }
 
 #------------------------------------
+# build gsi_utils
+#------------------------------------
+$Build_gsi && {
+echo " .... Building gsi .... "
+./build_gsi_utils.sh > $logs_dir/build_gsi_utils.log 2>&1
+rc=$?
+if [[ $rc -ne 0 ]] ; then
+    echo "Fatal error in building gsi_utils."
+    echo "The log file is in $logs_dir/build_gsi_utils.log"
+fi
+((err+=$rc))
+}
+
+#------------------------------------
+#------------------------------------
 # build ncep_post
 #------------------------------------
 $Build_ncep_post && {
