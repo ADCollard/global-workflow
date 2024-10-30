@@ -204,13 +204,13 @@ done
 #    $LINK ../sorc/gsi_utils.fd/install/bin/$gsiexe .
 #done
 
-for gsiexe in enkf.x gsi.x recentersigp.x; do
+for gsiexe in enkf.x gsi.x; do
     [[ -s $gsiexe ]] && rm -f $gsiexe
     $LINK ../sorc/gsi.fd/exec/$gsiexe .
 done
 
 for gsiexe in  calc_analysis.x calc_increment_ens_ncio.x calc_increment_ens.x \
-    getsfcensmeanp.x getsigensmeanp_smooth.x getsigensstatp.x interp_inc.x; do
+    getsfcensmeanp.x getsigensmeanp_smooth.x getsigensstatp.x interp_inc.x recentersigp.x; do
     [[ -s $gsiexe ]] && rm -f $gsiexe
     $LINK ../sorc/gsi_utils.fd/install/bin/$gsiexe .
 done
