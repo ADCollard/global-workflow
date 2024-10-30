@@ -48,10 +48,10 @@ fi
 echo gsi_utils checkout ...
 if [[ ! -d gsi_utils.fd ]] ; then
     rm -f ${topdir}/checkout-gsi.log
-# Check out the version before the changes for Thompson microphysics were introduced.
+# Check out a version before the changes for Thompson microphysics were introduced.
     git clone --recursive https://github.com/NOAA-EMC/GSI-Utils.git gsi_utils.fd >> ${topdir}/checkout-gsi_utils.log 2>&1
     cd gsi_utils.fd
-    git checkout 4d4daa2def14fd45537b94926f10825b633411ae
+    git checkout  4c39529b48836277df3ad388a3b99184ace0abdc
     cd ${topdir}
 else
     echo 'Skip.  Directory gsi_utils.fd already exists.'
