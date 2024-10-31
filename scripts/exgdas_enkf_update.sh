@@ -123,7 +123,9 @@ CONVINFO=${CONVINFO:-${FIXgsi}/global_convinfo.txt}
 OZINFO=${OZINFO:-${FIXgsi}/global_ozinfo.txt}
 SCANINFO=${SCANINFO:-${FIXgsi}/global_scaninfo.txt}
 HYBENSINFO=${HYBENSINFO:-${FIXgsi}/global_hybens_info.l${LEVS_ENKF}.txt}
-ANAVINFO=${ANAVINFO:-${FIXgsi}/global_anavinfo.l${LEVS_ENKF}.txt}
+#ANAVINFO=${ANAVINFO:-${FIXgsi}/global_anavinfo.l${LEVS_ENKF}.txt}
+# Use the following for v16 workflow
+ANAVINFO=${ANAVINFO:-${FIXgsi}/global_anavinfo_allhydro.l${LEVS_ENKF}.txt}
 VLOCALEIG=${VLOCALEIG:-${FIXgsi}/vlocal_eig_l${LEVS_ENKF}.dat}
 
 ENKF_SUFFIX="s"
