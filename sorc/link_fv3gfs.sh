@@ -146,7 +146,7 @@ cd ${pwd}/../parm               ||exit 8
 #    $LINK ../sorc/gsi_monitor.fd/src/Minimization_Monitor/nwprod/gfs/scripts/exgfs_atmos_vminmon.sh          .
 #    $LINK ../sorc/gsi_monitor.fd/src/Ozone_Monitor/nwprod/gdas_oznmon/scripts/exgdas_atmos_verfozn.sh        .
 #    $LINK ../sorc/gsi_monitor.fd/src/Radiance_Monitor/nwprod/gdas_radmon/scripts/exgdas_atmos_verfrad.sh     .
-#cd ${pwd}/../ush                ||exit 8
+cd ${pwd}/../ush                ||exit 8
 #C    $LINK ../sorc/gsi_monitor.fd/src/Minimization_Monitor/nwprod/minmon_shared/ush/minmon_xtrct_costs.pl     .
 #C    $LINK ../sorc/gsi_monitor.fd/src/Minimization_Monitor/nwprod/minmon_shared/ush/minmon_xtrct_gnorms.pl    .
 #C    $LINK ../sorc/gsi_monitor.fd/src/Minimization_Monitor/nwprod/minmon_shared/ush/minmon_xtrct_reduct.pl    .
