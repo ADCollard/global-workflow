@@ -47,7 +47,7 @@ fi
 
 echo gsi_utils checkout ...
 if [[ ! -d gsi_utils.fd ]] ; then
-    rm -f ${topdir}/checkout-gsi.log
+    rm -f ${topdir}/checkout-gsi_utils.log
 # Check out a version before the changes for Thompson microphysics were introduced.
     git clone https://github.com/NOAA-EMC/GSI-Utils.git gsi_utils.fd >> ${topdir}/checkout-gsi_utils.log 2>&1
     cd gsi_utils.fd
@@ -56,6 +56,19 @@ if [[ ! -d gsi_utils.fd ]] ; then
 else
     echo 'Skip.  Directory gsi_utils.fd already exists.'
 fi
+
+echo gsi_monitor checkout ...
+if [[ ! -d gsi_monitor.fd ]] ; then
+    rm -f ${topdir}/checkout-gsi_monitor.log
+# Check out a version before the changes for Thompson microphysics were introduced.
+    git clone https://github.com/NOAA-EMC/GSI-Monitor.git gsi_monitor.fd >> ${topdir}/checkout-gsi_monitor.log 2>&1
+    cd gsi_monitor.fd
+    git checkout 94588d63ca636269474bf865603e0ccfeb4dc049
+    cd ${topdir}
+else
+    echo 'Skip.  Directory gsi_monitor.fd already exists.'
+fi
+
 
 echo gldas checkout ...
 if [[ ! -d gldas.fd ]] ; then

@@ -139,12 +139,8 @@ ush/global_chgres_driver.sh
 ush/global_cycle.sh
 ush/global_cycle_driver.sh
 ush/link_crtm_fix.sh
-ush/minmon_xtrct_costs.pl
-ush/minmon_xtrct_gnorms.pl
-ush/minmon_xtrct_reduct.pl
 ush/mkwfsgbl.sh
 ush/mod_icec.sh
-ush/ozn_xtrct.sh
 ush/radmon_ck_stdout.sh
 ush/radmon_err_rpt.sh
 ush/radmon_verf_angle.sh

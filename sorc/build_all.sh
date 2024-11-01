@@ -98,6 +98,21 @@ fi
 }
 
 #------------------------------------
+# build gsi_monitor
+#------------------------------------
+$Build_gsi && {
+echo " .... Building gsi .... "
+./build_gsi_monitor.sh > $logs_dir/build_gsi_monitor.log 2>&1
+rc=$?
+if [[ $rc -ne 0 ]] ; then
+    echo "Fatal error in building gsi_monitor."
+    echo "The log file is in $logs_dir/build_gsi_monitor.log"
+fi
+((err+=$rc))
+}
+
+#------------------------------------
+#------------------------------------
 #------------------------------------
 # build ncep_post
 #------------------------------------
