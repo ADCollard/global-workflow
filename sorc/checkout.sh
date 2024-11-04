@@ -60,10 +60,10 @@ fi
 echo gsi_monitor checkout ...
 if [[ ! -d gsi_monitor.fd ]] ; then
     rm -f ${topdir}/checkout-gsi_monitor.log
-# Check out a version before the changes for Thompson microphysics were introduced.
+# Check out a version before changes for the new directory structure were introduced.
     git clone https://github.com/NOAA-EMC/GSI-Monitor.git gsi_monitor.fd >> ${topdir}/checkout-gsi_monitor.log 2>&1
     cd gsi_monitor.fd
-    git checkout 94588d63ca636269474bf865603e0ccfeb4dc049
+    git checkout e1f9f21af16ce912fdc2cd75c5b27094a550a0c5
     cd ${topdir}
 else
     echo 'Skip.  Directory gsi_monitor.fd already exists.'
