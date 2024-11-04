@@ -91,7 +91,6 @@ cd ${pwd}/../util               ||exit 8
         $LINK ../sorc/ufs_utils.fd/util/$file .
     done
 
-
 #-----------------------------------
 #--add gfs_wafs link if checked out
 if [ -d ${pwd}/gfs_wafs.fd ]; then
@@ -174,16 +173,6 @@ fi
 
 [[ -s gfs_ncep_post ]] && rm -f gfs_ncep_post
 $LINK ../sorc/gfs_post.fd/exec/ncep_post gfs_ncep_post
-
-if [ -d ${pwd}/gfs_wafs.fd ]; then
-    for wafsexe in \
-          wafs_awc_wafavn  wafs_blending  wafs_blending_0p25 \
-          wafs_cnvgrib2  wafs_gcip  wafs_grib2_0p25 \
-          wafs_makewafs  wafs_setmissing; do
-        [[ -s $wafsexe ]] && rm -f $wafsexe
-        $LINK ../sorc/gfs_wafs.fd/exec/$wafsexe .
-    done
-fi
 
 for ufs_utilsexe in \
      emcsfc_ice_blend  emcsfc_snow2mdl  global_cycle ; do
@@ -280,18 +269,6 @@ cd ${pwd}/../sorc   ||   exit 8
         emcsfc_snow2mdl.fd   global_chgres.fd  orog.fd ;do
         $SLINK ufs_utils.fd/sorc/$prog                                                     $prog
     done
-
-
-    if [ -d ${pwd}/gfs_wafs.fd ]; then
-        $SLINK gfs_wafs.fd/sorc/wafs_awc_wafavn.fd                                              wafs_awc_wafavn.fd
-        $SLINK gfs_wafs.fd/sorc/wafs_blending.fd                                                wafs_blending.fd
-        $SLINK gfs_wafs.fd/sorc/wafs_blending_0p25.fd                                           wafs_blending_0p25.fd
-        $SLINK gfs_wafs.fd/sorc/wafs_cnvgrib2.fd                                                wafs_cnvgrib2.fd
-        $SLINK gfs_wafs.fd/sorc/wafs_gcip.fd                                                    wafs_gcip.fd
-        $SLINK gfs_wafs.fd/sorc/wafs_grib2_0p25.fd                                              wafs_grib2_0p25.fd
-        $SLINK gfs_wafs.fd/sorc/wafs_makewafs.fd                                                wafs_makewafs.fd
-        $SLINK gfs_wafs.fd/sorc/wafs_setmissing.fd                                              wafs_setmissing.fd
-    fi
 
     for prog in gdas2gldas.fd  gldas2gdas.fd  gldas_forcing.fd  gldas_model.fd  gldas_post.fd  gldas_rst.fd ;do
         $SLINK gldas.fd/sorc/$prog                                                     $prog
