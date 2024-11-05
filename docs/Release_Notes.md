@@ -7,6 +7,7 @@ PRELUDE
 The upstream OBSPROC package is updated to v1.3. Along with this are the following companion updates:
 * workflow and UFS_UTILS package updates to use the new AFWA global snow file due to the hemispheric snow files being phased out
 * updated GSI code and convinfo file for saildrone observations
+* Updated GSI convinfo to switch on PlanetIQ GPSRO data
 
 IMPLEMENTATION INSTRUCTIONS
 ---------------------------
