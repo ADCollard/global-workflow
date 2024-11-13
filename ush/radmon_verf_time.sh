@@ -1,6 +1,4 @@
-#! /usr/bin/env bash
-
-source "$HOMEgfs/ush/preamble.sh"
+#!/bin/ksh
 
 ################################################################################
 ####  UNIX Script Documentation Block
@@ -43,6 +41,10 @@ source "$HOMEgfs/ush/preamble.sh"
 #                       defaults to current directory 
 #     SATYPE		list of satellite/instrument sources
 #        		defaults to none
+#     MAIL_TO		email recipients
+#			defaults to none
+#     MAIL_CC		email cc recipients
+#			defaults to none
 #     VERBOSE           Verbose flag (YES or NO)
 #                       defaults to NO
 #     LITTLE_ENDIAN     flag for little endian machine
@@ -79,6 +81,11 @@ source "$HOMEgfs/ush/preamble.sh"
 
 #  Command line arguments.
 export PDATE=${1:-${PDATE:?}}
+
+
+if [[ "$VERBOSE" = "YES" ]]; then
+   set -ax
+fi
 
 # Directories
 FIXgdas=${FIXgdas:-$(pwd)}
@@ -120,8 +127,11 @@ REGIONAL_RR=${REGIONAL_RR:-0}
 rgnHH=${rgnHH:-}
 rgnTM=${rgnTM:-}
 SATYPE=${SATYPE:-}
+MAIL_TO=${MAIL_TO:-}
+MAIL_CC=${MAIL_CC:-}
 VERBOSE=${VERBOSE:-NO}
 LITTLE_ENDIAN=${LITTLE_ENDIAN:-0}
+USE_MAIL=${USE_MAIL:-1}
 
 time_exec=radmon_time.x
 USE_ANL=${USE_ANL:-0}
@@ -142,10 +152,10 @@ if [[ ! -s ./${time_exec} ]]; then
    err=8
 fi
 
-iyy=$(echo $PDATE | cut -c1-4)
-imm=$(echo $PDATE | cut -c5-6)
-idd=$(echo $PDATE | cut -c7-8)
-ihh=$(echo $PDATE | cut -c9-10)
+iyy=`echo $PDATE | cut -c1-4`
+imm=`echo $PDATE | cut -c5-6`
+idd=`echo $PDATE | cut -c7-8`
+ihh=`echo $PDATE | cut -c9-10`
 cyc=$ihh
 CYCLE=$cyc
 
@@ -183,11 +193,11 @@ if [[ $err -eq 0 ]]; then
          continue
       fi
 
-      ctr=$(expr $ctr + 1)
+      ctr=`expr $ctr + 1`
 
       for dtype in ${gesanl}; do
 
-         if [[ -f input ]]; then rm input; fi
+         rm input
 
          if [[ $dtype == "anl" ]]; then
             data_file=${type}_anl.${PDATE}.ieee_d
@@ -230,7 +240,7 @@ EOF
          ./${time_exec} < input >>   stdout.${type} 2>>errfile
          
          if [[ $err -ne 0 ]]; then
-            fail=$(expr $fail + 1)
+            fail=`expr $fail + 1`
          fi
 
 #-------------------------------------------------------------------
@@ -252,22 +262,20 @@ EOF
 
    ${USHradmon}/rstprod.sh
 
-   if compgen -G "time*.ieee_d*" > /dev/null || compgen -G "time*.ctl*" > /dev/null; then
-     tar_file=radmon_time.tar
-     tar -cf $tar_file time*.ieee_d* time*.ctl*
-     ${COMPRESS} ${tar_file}
-     mv $tar_file.${Z} ${TANKverf_rad}/.
+   tar_file=radmon_time.tar
+   tar -cf $tar_file time*.ieee_d* time*.ctl*
+   ${COMPRESS} ${tar_file}
+   mv $tar_file.${Z} ${TANKverf_rad}/.
 
-     if [[ $RAD_AREA = "rgn" ]]; then
-        cwd=$(pwd)
-        cd ${TANKverf_rad}
-        tar -xf ${tar_file}.${Z}
-        rm ${tar_file}.${Z}
-        cd ${cwd}
-     fi
+   if [[ $RAD_AREA = "rgn" ]]; then
+      cwd=`pwd`
+      cd ${TANKverf_rad}
+      tar -xf ${tar_file}.${Z}
+      rm ${tar_file}.${Z}
+      cd ${cwd}
    fi
 
-   if [[ $ctr -gt 0 && $fail -eq $ctr || $fail -gt $ctr  ]]; then
+   if [[ $fail -eq $ctr || $fail -gt $ctr  ]]; then
       echo "fail, ctr = $fail, $ctr"
       err=10
    fi
@@ -327,7 +335,7 @@ EOF
 #  move warning notification to TANKverf
 #
    if [[ -s ${diag} ]]; then
-      lines=$(wc -l <${diag})
+      lines=`wc -l <${diag}`
       echo "lines in diag = $lines"   
    
       if [[ $lines -gt 0 ]]; then
@@ -348,8 +356,8 @@ EOF
    bad_chan=bad_chan.${PDATE}
    low_count=low_count.${PDATE}
 
-   qdate=$($NDATE -${CYCLE_INTERVAL} $PDATE)
-   pday=$(echo $qdate | cut -c1-8)
+   qdate=`$NDATE -${CYCLE_INTERVAL} $PDATE`
+   pday=`echo $qdate | cut -c1-8`
    
    prev_bad_pen=bad_pen.${qdate}
    prev_bad_chan=bad_chan.${qdate}
@@ -402,14 +410,11 @@ EOF
    #--------------------------------------------------------------------
    #  Remove extra spaces in new bad_pen & low_count files
    #
-   if [[ -s ${bad_pen} ]]; then
-     gawk '{$1=$1}1' $bad_pen > tmp.bad_pen
-     mv -f tmp.bad_pen $bad_pen
-   fi
-   if [[ -s ${low_count} ]]; then
-     gawk '{$1=$1}1' $low_count > tmp.low_count
-     mv -f tmp.low_count $low_count
-   fi
+   gawk '{$1=$1}1' $bad_pen > tmp.bad_pen
+   mv -f tmp.bad_pen $bad_pen
+
+   gawk '{$1=$1}1' $low_count > tmp.low_count
+   mv -f tmp.low_count $low_count
 
    echo " do_pen, do_chan, do_cnt = $do_pen, $do_chan, $do_cnt"
    echo " diag_report = $diag_report "
@@ -522,7 +527,7 @@ EOF
       #  dump report to log file
       #
       if [[ -s ${report} ]]; then
-         lines=$(wc -l <${report})
+         lines=`wc -l <${report}`
          if [[ $lines -gt 2 ]]; then
             cat ${report}
 
@@ -555,13 +560,16 @@ fi
       rm -f stdout.${type}
    done
 
-################################################################################
-#-------------------------------------------------------------------
-#  end error reporting section
-#-------------------------------------------------------------------
-################################################################################
+   ################################################################################
+   #-------------------------------------------------------------------
+   #  end error reporting section
+   #-------------------------------------------------------------------
+   ################################################################################
 
-################################################################################
-#  Post processing
+   ################################################################################
+   #  Post processing
+   if [[ "$VERBOSE" = "YES" ]]; then
+      echo $(date) EXITING $0 error code ${err} >&2
+   fi
 
 exit ${err}

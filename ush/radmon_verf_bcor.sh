@@ -1,6 +1,4 @@
-#! /usr/bin/env bash
-
-source "$HOMEgfs/ush/preamble.sh"
+#!/bin/ksh
 
 ################################################################################
 ####  UNIX Script Documentation Block
@@ -37,6 +35,8 @@ source "$HOMEgfs/ush/preamble.sh"
 #                       defaults to current directory
 #     SATYPE            list of satellite/instrument sources
 #                       defaults to none
+#     VERBOSE           Verbose flag (YES or NO)
+#                       defaults to NO
 #     LITTLE_ENDIAN     flag for little endian machine
 #                       defaults to 0 (big endian)
 #     USE_ANL           use analysis files as inputs in addition to 
@@ -67,6 +67,11 @@ source "$HOMEgfs/ush/preamble.sh"
 #  Command line arguments.
 export PDATE=${1:-${PDATE:?}}
 
+
+if [[ "$VERBOSE" = "YES" ]]; then
+   set -ax
+fi
+
 # Directories
 EXECradmon=${EXECradmon:-$(pwd)}
 TANKverf_rad=${TANKverf_rad:-$(pwd)}
@@ -78,6 +83,7 @@ touch $pgmout
 # Other variables
 RAD_AREA=${RAD_AREA:-glb}
 SATYPE=${SATYPE:-}
+VERBOSE=${VERBOSE:-NO}
 LITTLE_ENDIAN=${LITTLE_ENDIAN:-0}
 USE_ANL=${USE_ANL:-0}
 
@@ -111,10 +117,10 @@ else
 
    export pgm=${bcor_exec}
 
-   iyy=$(echo $PDATE | cut -c1-4)
-   imm=$(echo $PDATE | cut -c5-6)
-   idd=$(echo $PDATE | cut -c7-8)
-   ihh=$(echo $PDATE | cut -c9-10)
+   iyy=`echo $PDATE | cut -c1-4`
+   imm=`echo $PDATE | cut -c5-6`
+   idd=`echo $PDATE | cut -c7-8`
+   ihh=`echo $PDATE | cut -c9-10`
 
    ctr=0
    fail=0
@@ -126,7 +132,7 @@ else
 
          prep_step
 
-         ctr=$(expr $ctr + 1)
+         ctr=`expr $ctr + 1`
 
          if [[ $dtype == "anl" ]]; then
             data_file=${type}_anl.${PDATE}.ieee_d
@@ -146,7 +152,7 @@ else
             input_file=${type}
          fi
 
-         if [[ -f input ]]; then rm input; fi
+         rm input
 
       # Check for 0 length input file here and avoid running 
       # the executable if $input_file doesn't exist or is 0 bytes
@@ -176,7 +182,7 @@ EOF
             ./${bcor_exec} < input >> ${pgmout} 2>>errfile
             export err=$?; err_chk
             if [[ $? -ne 0 ]]; then
-               fail=$(expr $fail + 1)
+               fail=`expr $fail + 1`
             fi
  
 
@@ -200,27 +206,29 @@ EOF
    ${USHradmon}/rstprod.sh
    tar_file=radmon_bcor.tar
 
-   if compgen -G "bcor*.ieee_d*" > /dev/null || compgen -G "bcor*.ctl*" > /dev/null; then
-     tar -cf $tar_file bcor*.ieee_d* bcor*.ctl*
-     ${COMPRESS} ${tar_file}
-     mv $tar_file.${Z} ${TANKverf_rad}/.
+   tar -cf $tar_file bcor*.ieee_d* bcor*.ctl*
+   ${COMPRESS} ${tar_file}
+   mv $tar_file.${Z} ${TANKverf_rad}/.
 
-     if [[ $RAD_AREA = "rgn" ]]; then
-        cwd=$(pwd)
-        cd ${TANKverf_rad}
-        tar -xf ${tar_file}.${Z}
-        rm ${tar_file}.${Z}
-        cd ${cwd}
-     fi
+   if [[ $RAD_AREA = "rgn" ]]; then
+      cwd=`pwd`
+      cd ${TANKverf_rad}
+      tar -xf ${tar_file}.${Z}
+      rm ${tar_file}.${Z}
+      cd ${cwd}
    fi
 
-   if [[ $ctr -gt 0 && $fail -eq $ctr || $fail -gt $ctr ]]; then
+   if [[ $fail -eq $ctr || $fail -gt $ctr ]]; then
       err=7
    fi
 fi
 
 ################################################################################
 #  Post processing
+
+if [[ "$VERBOSE" = "YES" ]]; then
+   echo $(date) EXITING $0 error code ${err} >&2
+fi
 
 exit ${err}
 

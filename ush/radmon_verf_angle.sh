@@ -1,6 +1,4 @@
-#! /usr/bin/env bash
-
-source "$HOMEgfs/ush/preamble.sh"
+#!/bin/ksh
 
 ################################################################################
 ####  UNIX Script Documentation Block
@@ -84,6 +82,10 @@ echo " RADMON_NETCDF, netcdf_boolean = ${RADMON_NETCDF}, $netcdf_boolean"
 which prep_step
 which startmsg
 
+if [[ "$VERBOSE" = "YES" ]]; then
+   set -ax
+fi
+
 # Directories
 FIXgdas=${FIXgdas:-$(pwd)}
 EXECradmon=${EXECradmon:-$(pwd)}
@@ -125,10 +127,10 @@ else
 
    export pgm=${angle_exec}
 
-   iyy=$(echo $PDATE | cut -c1-4)
-   imm=$(echo $PDATE | cut -c5-6)
-   idd=$(echo $PDATE | cut -c7-8)
-   ihh=$(echo $PDATE | cut -c9-10)
+   iyy=`echo $PDATE | cut -c1-4`
+   imm=`echo $PDATE | cut -c5-6`
+   idd=`echo $PDATE | cut -c7-8`
+   ihh=`echo $PDATE | cut -c9-10`
 
    ctr=0
    fail=0
@@ -147,7 +149,7 @@ else
          echo "pgmout = $pgmout"
          prep_step
 
-         ctr=$(expr $ctr + 1)
+         ctr=`expr $ctr + 1`
 
          if [[ $dtype == "anl" ]]; then
             data_file=${type}_anl.${PDATE}.ieee_d
@@ -159,13 +161,12 @@ else
             angl_ctl=angle.${ctl_file}
          fi
 
-         angl_file=""
          if [[ $REGIONAL_RR -eq 1 ]]; then
             angl_file=${rgnHH}.${data_file}.${rgnTM}
          fi
 
 
-         if [[ -f input ]]; then rm input; fi
+         rm input
 
          nchanl=-999
 cat << EOF > input
@@ -190,8 +191,25 @@ EOF
          ./${angle_exec} < input >>   ${pgmout} 2>>errfile
          export err=$?; err_chk
          if [[ $err -ne 0 ]]; then
-             fail=$(expr $fail + 1)
+             fail=`expr $fail + 1`
          fi
+
+#-------------------------------------------------------------------
+#  move data, control, and stdout files to $TANKverf_rad and compress
+
+         #-----------------------------------------------------------
+         #  For cfp use, instead of executing these file manipulation 
+	 #  comands directly, journel them instead to a flat file.
+	 #  Then execute cfp (as appropriate for each machine) to
+	 #  perform the file manipulations.  Those manipulation 
+         #  commands should probably go in a parm file so I can not
+	 #  rely on a machine dependent decision here.
+	 #
+	 #  Note that in my esafford_RadMon_45526 branch I've already
+	 #  modified the order of operation to compress before copy.
+	 #  That change should be delivered to trunk soon.
+         #-----------------------------------------------------------
+
 
          if [[ -s ${angl_file} ]]; then
             ${COMPRESS} -f ${angl_file}
@@ -209,22 +227,20 @@ EOF
 
    ${USHradmon}/rstprod.sh
 
-   tar_file=radmon_angle.tar
-   if compgen -G "angle*.ieee_d*" > /dev/null || compgen -G "angle*.ctl*" > /dev/null; then
-      tar -cf $tar_file angle*.ieee_d* angle*.ctl*
-      ${COMPRESS} ${tar_file}
-      mv $tar_file.${Z} ${TANKverf_rad}/.
+   tar_file=radmon_angle.tar 
+   tar -cf $tar_file angle*.ieee_d* angle*.ctl*
+   ${COMPRESS} ${tar_file}
+   mv $tar_file.${Z} ${TANKverf_rad}/.
 
-      if [[ $RAD_AREA = "rgn" ]]; then
-         cwd=$(pwd)
-         cd ${TANKverf_rad}
-         tar -xf ${tar_file}.${Z}
-         rm ${tar_file}.${Z}
-         cd ${cwd}
-      fi
-   fi
+   if [[ $RAD_AREA = "rgn" ]]; then
+      cwd=`pwd`
+      cd ${TANKverf_rad}
+      tar -xf ${tar_file}.${Z}
+      rm ${tar_file}.${Z}
+      cd ${cwd}
+   fi   
 
-   if [[ $ctr -gt 0 && $fail -eq $ctr || $fail -gt $ctr ]]; then
+   if [[ $fail -eq $ctr || $fail -gt $ctr ]]; then
       err=3
    fi
 fi
@@ -232,4 +248,10 @@ fi
 ################################################################################
 #  Post processing
 
+if [[ "$VERBOSE" = "YES" ]]; then
+   echo $(date) EXITING $0 error code ${err} >&2
+fi
+
+
+echo "<-- radmon_verf_angle.sh"
 exit ${err}

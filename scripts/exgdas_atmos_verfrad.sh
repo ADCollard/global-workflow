@@ -1,7 +1,4 @@
-#! /usr/bin/env bash
-
-source "$HOMEgfs/ush/preamble.sh"
-
+#/bin/sh
 ################################################################################
 ####  UNIX Script Documentation Block
 #                      .                                             .
@@ -18,8 +15,15 @@ source "$HOMEgfs/ush/preamble.sh"
 #      >0 - some problem encountered
 #
 ################################################################################
+scr=exgdas_vrfyrad.sh
+echo "${scr} HAS STARTED"
 
-export VERBOSE=${VERBOSE:-YES}
+export VERBOSE=${VERBOSE:-"NO"} 
+if [[ "$VERBOSE" = "YES" ]]
+then
+   set -x
+fi
+
 
 export RUN_ENVIR=${RUN_ENVIR:-nco}
 export NET=${NET:-gfs}
@@ -49,6 +53,9 @@ export USE_ANL=${USE_ANL:-1}
 export PDATE=${PDY}${cyc}
 export DO_DIAG_RPT=${DO_DIAG_RPT:-1}
 export DO_DATA_RPT=${DO_DATA_RPT:-1}
+export USE_MAIL=${USE_MAIL:-0}
+export MAIL_TO=${MAIL_TO:-" "}
+export MAIL_CC=${MAIL_CC:-" "}
 export NCP=${NCP:-/bin/cp}
 
 ###########################################################################
@@ -91,7 +98,7 @@ if [[ -s ${radstat} && -s ${biascr} ]]; then
    #  new sources to the list before writing back out.
    #------------------------------------------------------------------
 
-   radstat_satype=$(ls d*ges* | awk -F_ '{ print $2 "_" $3 }')
+   radstat_satype=`ls d*ges* | awk -F_ '{ print $2 "_" $3 }'`
    if [[ "$VERBOSE" = "YES" ]]; then
       echo $radstat_satype
    fi
@@ -110,7 +117,7 @@ if [[ -s ${radstat} && -s ${biascr} ]]; then
    fi
 
    echo satype_file = $satype_file
-   export SATYPE=$(cat ${satype_file})
+   export SATYPE=`cat ${satype_file}`
    
 
    #-------------------------------------------------------------
@@ -121,7 +128,7 @@ if [[ -s ${radstat} && -s ${biascr} ]]; then
    satype_changes=0
    new_satype=$SATYPE
    for type in ${radstat_satype}; do
-      test=$(echo $SATYPE | grep $type | wc -l)
+      test=`echo $SATYPE | grep $type | wc -l`
 
       if [[ $test -eq 0 ]]; then
          if [[ "$VERBOSE" = "YES" ]]; then
@@ -144,20 +151,12 @@ if [[ -s ${radstat} && -s ${biascr} ]]; then
          netcdf=1
       fi
      
-      if [[ $(find . -maxdepth 1 -type f -name "diag_${type}_ges.${PDATE}*.${Z}" | wc -l) -gt 0 ]]; then
-        mv diag_${type}_ges.${PDATE}*.${Z} ${type}.${Z}
-        ${UNCOMPRESS} ./${type}.${Z}
-      else
-        echo "WARNING: diag_${type}_ges.${PDATE}*.${Z} not available, skipping"
-      fi
+      mv diag_${type}_ges.${PDATE}*.${Z} ${type}.${Z}
+      ${UNCOMPRESS} ./${type}.${Z}
      
       if [[ $USE_ANL -eq 1 ]]; then
-        if [[ $(find . -maxdepth 1 -type f -name "diag_${type}_anl.${PDATE}*.${Z}" | wc -l) -gt 0 ]]; then
-          mv diag_${type}_anl.${PDATE}*.${Z} ${type}_anl.${Z}
-          ${UNCOMPRESS} ./${type}_anl.${Z}
-        else
-          echo "WARNING: diag_${type}_anl.${PDATE}*.${Z} not available, skipping"
-        fi
+         mv diag_${type}_anl.${PDATE}*.${Z} ${type}_anl.${Z}
+         ${UNCOMPRESS} ./${type}_anl.${Z}
       fi
    done
 
@@ -173,17 +172,17 @@ if [[ -s ${radstat} && -s ${biascr} ]]; then
     ${USHradmon}/radmon_verf_bcoef.sh ${PDATE}
     rc_bcoef=$?
 
-    ${USHradmon}/radmon_verf_bcor.sh "${PDATE}"
+    ${USHradmon}/radmon_verf_bcor.sh ${PDATE}
     rc_bcor=$?
 
-    ${USHradmon}/radmon_verf_time.sh "${PDATE}"
+    ${USHradmon}/radmon_verf_time.sh ${PDATE}
     rc_time=$?
 
     #--------------------------------------
     #  optionally run clean_tankdir script
     #
-    if [[ ${CLEAN_TANKVERF:-0} -eq 1 ]]; then
-       "${USHradmon}/clean_tankdir.sh" glb 60
+    if [[ ${CLEAN_TANKVERF} -eq 1 ]]; then
+       ${USHradmon}/clean_tankdir.sh glb 60
        rc_clean_tankdir=$?
        echo "rc_clean_tankdir = $rc_clean_tankdir"
     fi
@@ -213,10 +212,17 @@ fi
 export CHGRP_CMD=${CHGRP_CMD:-"chgrp ${group_name:-rstprod}"}
 rlist="saphir"
 for rtype in $rlist; do
-  if compgen -G "$TANKverf_rad/*${rtype}*" > /dev/null; then
-     ${CHGRP_CMD} "${TANKverf_rad}"/*${rtype}*
-  fi
+    ${CHGRP_CMD} $TANKverf_rad/*${rtype}*
 done
 
+
+if [[ "$VERBOSE" = "YES" ]]; then
+   echo "end exgdas_vrfyrad.sh, exit value = ${err}"
+fi
+
+echo "${scr} HAS ENDED"
+
+
+set +x
 exit ${err}
 
