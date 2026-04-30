@@ -128,9 +128,9 @@ class WDQMS:
             df.loc[(df['var_id'] != 110) & (df['Obs_Minus_Forecast_adjusted'].abs() > 500),
                    'Obs_Minus_Forecast_adjusted'] = -999.9999
 
-        if self.wdqms_type in ['TEMP']:
+        #if self.wdqms_type in ['TEMP']:
             # Only include assimilated data as per WDQMS requirement document
-            df = df.loc[df['Analysis_Use_Flag'] == 1]
+            # df = df.loc[df['Analysis_Use_Flag'] == 1]
 
         logging.debug(f"Total observations for {self.wdqms_type} after filter: {len(df)}")
         logging.info("Exiting wdqms_type_requirements()")
@@ -519,8 +519,17 @@ class WDQMS:
             qsat_obs = self._temp_2_saturation_specific_humidity(pressure, t_obs)
             qsat_ges = self._temp_2_saturation_specific_humidity(pressure, t_ges)
 
-            # Calculate background departure
-            bg_dep = (q_obs / qsat_obs) - (q_ges / qsat_ges)
+            # A tiny threshold (epsilon) for float comparison
+            eps = 1e-15 
+            
+            # Check if the absolute value is greater than epsilon
+            mask = (np.abs(qsat_obs) > eps) & (np.abs(qsat_ges) > eps)
+            
+            bg_dep = np.where(
+                mask,
+                (q_obs / np.where(mask, qsat_obs, 1)) - (q_ges / np.where(mask, qsat_ges, 1)),
+                np.nan
+            )
 
             # Grab conditions from merged_df
             station_ids = merged_df['Station_ID']
