@@ -81,12 +81,17 @@ SCRIPT CHANGES
 
 * Corrects the index in the exgdas_enkf_update.sh script for the satellite observation's namelist entry of abi_q19.
 * Adds gmi_option=4 to exglobal_atmos_analysis.sh script.
+* Correct bug for abi_g19 entry in exgdas_enkf_update.sh
 
 FIX CHANGES
 -----------
 
 * Addition of Sentinal-6 and PlanetIQ YAM-8 GNSSRO active assimilation.
 * Turn off Metop-B AMSU-A channel 8 which has become unusable.
+* Cloudy radiance and scaninfo parameters added for AMSR2 (not assimilated)
+* build_gesinfo functionality added (but not exercised)
+* rejectlist_global.txt expanded for surface stations (not assimilated)
+* GMI changed to passive mode (safeguard - GMI is not currently being processed)
 
 MODULE CHANGES
 --------------
