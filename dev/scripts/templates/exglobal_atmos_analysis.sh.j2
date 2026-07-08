@@ -1,0 +1,91 @@
+#! /usr/bin/env bash
+# Auto-generated from exglobal_atmos_analysis.sh.j2
+# Do not edit generated file directly.
+
+set -euo pipefail
+
+# --------------------------
+# YAML-driven JEDI controls
+# --------------------------
+export DOIAU="{{ cfg.DOIAU }}"
+export DO_JEDIATMVAR="{{ cfg.DO_JEDIATMVAR }}"
+export DO_JEDIATMENS="{{ cfg.DO_JEDIATMENS }}"
+export DO_TEST_MODE="{{ cfg.DO_TEST_MODE }}"
+export CASE_ANL="{{ cfg.CASE_ANL }}"
+export USE_IODADIR="{{ cfg.USE_IODADIR }}"
+export IODADIR="{{ cfg.IODADIR | default('') }}"
+
+export LAYOUT_X_ATMANL="{{ cfg.LAYOUT_X_ATMANL | default('') }}"
+export LAYOUT_Y_ATMANL="{{ cfg.LAYOUT_Y_ATMANL | default('') }}"
+export NUMBER_OUTER_LOOPS="{{ cfg.NUMBER_OUTER_LOOPS | default('1') }}"
+export NINNER_LOOP1="{{ cfg.NINNER_LOOP1 | default('25') }}"
+
+export LAYOUT_X_ATMENSANL="{{ cfg.LAYOUT_X_ATMENSANL | default('') }}"
+export LAYOUT_Y_ATMENSANL="{{ cfg.LAYOUT_Y_ATMENSANL | default('') }}"
+
+export OBS_LIST_YAML="{{ cfg.OBS_LIST_YAML | default('') }}"
+export VAR_JEDI_TEST_YAML="{{ cfg.VAR_JEDI_TEST_YAML | default('') }}"
+export LETKF_JEDI_TEST_YAML="{{ cfg.LETKF_JEDI_TEST_YAML | default('') }}"
+export OBS_JEDI_TEST_YAML="{{ cfg.OBS_JEDI_TEST_YAML | default('') }}"
+export SOL_JEDI_TEST_YAML="{{ cfg.SOL_JEDI_TEST_YAML | default('') }}"
+export FV3INC_JEDI_TEST_YAML="{{ cfg.FV3INC_JEDI_TEST_YAML | default('') }}"
+
+export DO_CONVERT_IODA="{{ cfg.DO_CONVERT_IODA | default('NO') }}"
+export DONST="{{ cfg.DONST | default('NO') }}"
+export NST_MODEL="{{ cfg.NST_MODEL | default('1') }}"
+
+# -----------------------------------------
+# Hand-off to legacy script (minimal risk):
+# -----------------------------------------
+# 1) Keep full legacy workflow behavior
+# 2) Add JEDI branch points driven by vars above
+# 3) Run existing script for non-JEDI paths
+
+if [[ "${DO_JEDIATMVAR}" == "YES" || "${DO_JEDIATMENS}" == "YES" ]]; then
+  echo "[INFO] JEDI mode enabled"
+  echo "[INFO] OBS_LIST_YAML=${OBS_LIST_YAML}"
+
+  if [[ "${USE_IODADIR}" == "YES" ]]; then
+    if [[ -z "${IODADIR}" ]]; then
+      echo "[FATAL] USE_IODADIR=YES but IODADIR is empty" >&2
+      exit 1
+    fi
+  fi
+
+  # Optional test-mode quick validation
+  if [[ "${DO_TEST_MODE}" == "YES" ]]; then
+    echo "[INFO] Running in DO_TEST_MODE=YES"
+  fi
+
+  # 3DVAR branch
+  if [[ "${DO_JEDIATMVAR}" == "YES" ]]; then
+    [[ -n "${VAR_JEDI_TEST_YAML}" ]] || { echo "[FATAL] VAR_JEDI_TEST_YAML missing"; exit 1; }
+    echo "[INFO] Would run JEDI ATMVAR with ${VAR_JEDI_TEST_YAML}"
+    # Insert real command(s), e.g.:
+    # ${APRUN_JEDI} jedi_var.x "${VAR_JEDI_TEST_YAML}"
+  fi
+
+  # LETKF branch
+  if [[ "${DO_JEDIATMENS}" == "YES" ]]; then
+    [[ -n "${LETKF_JEDI_TEST_YAML}" ]] || { echo "[FATAL] LETKF_JEDI_TEST_YAML missing"; exit 1; }
+    echo "[INFO] Would run JEDI ATMENS with ${LETKF_JEDI_TEST_YAML}"
+    # Insert real command(s), e.g.:
+    # ${APRUN_JEDI} jedi_letkf.x "${LETKF_JEDI_TEST_YAML}"
+  fi
+
+  # FV3 increment stage (shared)
+  if [[ -n "${FV3INC_JEDI_TEST_YAML}" ]]; then
+    echo "[INFO] Would run FV3 increment step with ${FV3INC_JEDI_TEST_YAML}"
+    # ${APRUN_JEDI} fv3jedi_inc.x "${FV3INC_JEDI_TEST_YAML}"
+  fi
+
+  echo "[INFO] JEDI branch complete"
+  exit 0
+fi
+
+# -------------------------
+# Legacy GSI fallback path
+# -------------------------
+# NOTE: replace with the in-repo path if you keep the original script in place.
+LEGACY_SCRIPT="${HOMEglobal}/dev/scripts/exglobal_atmos_analysis.sh"
+exec "${LEGACY_SCRIPT}"
