@@ -14,7 +14,7 @@ from wxflow import (AttrDict, FileHandler, Task, Executable,
                     logit)
 
 logger = getLogger(__name__.split('.')[-1])
-
+VARBC_PARAMS_TAR = 'varbc_params.tar'
 required_jedi_keys = ['jedi_app_name', 'rundir', 'exe_src', 'mpi_cmd', 'jcb_base_yaml']
 optional_jedi_keys = ['jedi_args', 'jcb_algo', 'jcb_algo_yaml',
                       'obs_list_yaml', 'bias_files_yaml', 'app_test_yaml']
@@ -406,32 +406,25 @@ class Jedi:
         fh_dict['mkdir'].append(self.jcb_config[f'{self.component}_obsbiasin_path'])
         fh_dict['mkdir'].append(self.jcb_config[f'{self.component}_obsbiasout_path'])
 
-        # Copy files
-        files_already_copied = []
         bias_dest = self.jcb_config[f'{self.component}_obsbiasin_path']
-        for observation_from_jcb in self.jcb_config['observations']:
-            if observation_from_jcb in self.jcb_config.bias_files_dict and observation_from_jcb not in files_already_copied:
-                bias_src = os.path.join(comin, self.jcb_config[f'{self.component}_obsbiasin_prefix'] + self.jcb_config.bias_files_dict[observation_from_jcb])
-
+        bias_tarball = self.jcb_config[f'{self.component}_obsbiasin_prefix'] + VARBC_PARAMS_TAR
+        if self.jcb_config['observations']:
+            bias_src = os.path.join(comin, bias_tarball)
+            if os.path.exists(bias_src):
                 fh_dict['copy_opt'].append([bias_src, bias_dest])
-
-                # Don't copy same file multiple times
-                files_already_copied.append(observation_from_jcb)
+            else:
+                logger.warning(f"Bias correction file {bias_src} does not exist and will be skipped")
 
         # Execute FileHandler sync
         FileHandler(fh_dict).sync()
 
         # Untar bias corrections
-        bias_file_list = []
-        for ob in self.jcb_config['observations']:
-            if ob in self.jcb_config.bias_files_dict and not self.jcb_config.bias_files_dict[ob] in bias_file_list:
-                bias_file_list.append(self.jcb_config.bias_files_dict[ob])
-                bias_file_path = os.path.join(self.jcb_config[f"{self.component}_obsbiasin_path"],
-                                              self.jcb_config[f"{self.component}_obsbiasin_prefix"] + self.jcb_config.bias_files_dict[ob])
-                if os.path.exists(bias_file_path):
-                    Jedi.extract_tar(bias_file_path)
-                else:
-                    logger.warning(f"Bias correction file {bias_file_path} does not exist and will be skipped")
+        if fh_dict['copy_opt']:
+            bias_file_path = os.path.join(bias_dest, bias_tarball)
+            if os.path.exists(bias_file_path):
+                Jedi.extract_tar(bias_file_path)
+            else:
+                logger.warning(f"Bias correction file {bias_file_path} does not exist and will be skipped")
 
     @logit(logger)
     def save_obsbiasout(self, comout: str, archive_name: str) -> None:
